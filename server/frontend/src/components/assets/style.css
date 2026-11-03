@@ -123,3 +123,5 @@ img{
     text-align:center;
     box-shadow: 2px 2px 3px #999;  
 }
+
+@media(max-width:991px){.navbar{height:auto!important;min-height:96px}.navbar-collapse{display:flex!important;flex-wrap:wrap}.navbar-nav{flex-direction:row!important;gap:16px}.navbar-toggler{display:none}.navbar-text{margin-left:auto}}
