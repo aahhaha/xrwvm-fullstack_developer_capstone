@@ -1,0 +1,40 @@
+name: Lint Code
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  python-lint:
+    name: Python Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: pip install flake8
+      - name: Run Linter
+        run: flake8 server/djangoapp server/djangoproj --count --select=E9,F63,F7,F82 --show-source --statistics
+  javascript-lint:
+    name: JavaScript Lint
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: server/frontend
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install dependencies
+        run: npm ci
+      - name: Run Linter
+        run: npx eslint src --ext .js,.jsx
