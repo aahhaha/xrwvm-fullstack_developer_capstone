@@ -1,0 +1,42 @@
+name: Dealership Build and Test
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install backend dependencies
+        run: pip install -r server/requirements.txt
+      - name: Check Django configuration and migrations
+        working-directory: server
+        run: |
+          python manage.py check
+          python manage.py makemigrations --check --dry-run
+      - name: Test authentication and inventory APIs
+        working-directory: server
+        run: python manage.py test djangoapp --verbosity 2
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install frontend dependencies
+        working-directory: server/frontend
+        run: npm ci
+      - name: Build React application
+        working-directory: server/frontend
+        env:
+          CI: 'false'
+        run: npm run build
+      - name: Validate Node API syntax
+        run: node --check server/database/app.js
